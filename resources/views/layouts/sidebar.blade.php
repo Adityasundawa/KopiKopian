@@ -39,11 +39,11 @@
                     <i class="fa fa-id-card"></i> <span>Member</span>
                 </a>
             </li>
-            {{-- <li>
+            <li>
                 <a href="{{ route('supplier.index') }}">
                     <i class="fa fa-truck"></i> <span>Supplier</span>
                 </a>
-            </li> --}}
+            </li>
             <li class="header">TRANSAKSI</li>
             <li>
                 <a href="{{ route('pengeluaran.index') }}">
