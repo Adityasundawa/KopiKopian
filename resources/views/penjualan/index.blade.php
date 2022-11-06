@@ -18,10 +18,10 @@
                     <thead>
                         <th width="5%">No</th>
                         <th>Tanggal</th>
-                        <th>Kode Member</th>
+                        <th>Kode Nota</th>
                         <th>Total Item</th>
                         <th>Total Harga</th>
-                        <th>Diskon</th>
+                        <th>Status</th>
                         <th>Total Bayar</th>
                         <th>Kasir</th>
                         <th width="15%"><i class="fa fa-cog"></i></th>
@@ -33,6 +33,7 @@
 </div>
 
 @includeIf('penjualan.detail')
+
 @endsection
 
 @push('scripts')
@@ -70,7 +71,8 @@
                 {data: 'harga_jual'},
                 {data: 'jumlah'},
                 {data: 'subtotal'},
-            ]
+            ],
+           
         })
     });
 
@@ -80,6 +82,15 @@
         table1.ajax.url(url);
         table1.ajax.reload();
     }
+
+
+    function editData(url) {
+        $('#modal-edit').modal('show');
+
+        table1.ajax.url(url);
+        table1.ajax.reload();
+    }
+
 
     function deleteData(url) {
         if (confirm('Yakin ingin menghapus data terpilih?')) {

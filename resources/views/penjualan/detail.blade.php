@@ -17,6 +17,7 @@
                         <th>Subtotal</th>
                     </thead>
                 </table>
+                
             </div>
         </div>
     </div>

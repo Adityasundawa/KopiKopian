@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Member;
 use App\Models\Penjualan;
 use App\Models\PenjualanDetail;
 use App\Models\Produk;
@@ -36,11 +37,11 @@ class PenjualanController extends Controller
                 return tanggal_indonesia($penjualan->created_at, false);
             })
             ->addColumn('kode_member', function ($penjualan) {
-                $member = $penjualan->member->kode_member ?? '';
+                $member = tambah_nol_didepan($penjualan->id_penjualan, 10) ?? '';
                 return '<span class="label label-success">'. $member .'</spa>';
             })
             ->editColumn('diskon', function ($penjualan) {
-                return $penjualan->diskon . '%';
+                return $penjualan->status;
             })
             ->editColumn('kasir', function ($penjualan) {
                 return $penjualan->user->name ?? '';
@@ -50,11 +51,14 @@ class PenjualanController extends Controller
                 <div class="btn-group">
                     <button onclick="showDetail(`'. route('penjualan.show', $penjualan->id_penjualan) .'`)" class="btn btn-xs btn-info btn-flat"><i class="fa fa-eye"></i></button>
                     <button onclick="deleteData(`'. route('penjualan.destroy', $penjualan->id_penjualan) .'`)" class="btn btn-xs btn-danger btn-flat"><i class="fa fa-trash"></i></button>
+                    <a href="'. route('penjualan.edit', $penjualan->id_penjualan) .'" class="btn btn-xs btn-success btn-flat"><i class="fa fa-pencil"></i></a>
                 </div>
                 ';
             })
             ->rawColumns(['aksi', 'kode_member'])
             ->make(true);
+
+        
     }
 
     public function create()
@@ -89,7 +93,6 @@ class PenjualanController extends Controller
         foreach ($detail as $item) {
             $item->diskon = $request->diskon;
             $item->update();
-
             $produk = Produk::find($item->id_produk);
             $produk->stok -= $item->jumlah;
             $produk->update();
@@ -98,6 +101,30 @@ class PenjualanController extends Controller
         return redirect()->route('transaksi.selesai');
     }
 
+
+    public function edit2(Request $request)
+    {
+        $penjualan = Penjualan::findOrFail($request->id_penjualan);
+        $penjualan->id_member = $request->id_member;
+        $penjualan->total_item = $request->total_item;
+        $penjualan->total_harga = $request->total;
+        $penjualan->diskon = $request->diskon;
+        $penjualan->bayar = $request->bayar;
+        $penjualan->diterima = $request->diterima;
+        $penjualan->status = $request->status;
+        $penjualan->update();
+
+        $detail = PenjualanDetail::where('id_penjualan', $penjualan->id_penjualan)->get();
+        foreach ($detail as $item) {
+            $item->diskon = $request->diskon;
+            $item->update();
+            $produk = Produk::find($item->id_produk);
+            $produk->stok -= $item->jumlah;
+            $produk->update();
+        }
+        session(['id_penjualan' => $penjualan->id_penjualan]);
+        return redirect()->route('transaksi.selesai');
+    }
     public function show($id)
     {
         $detail = PenjualanDetail::with('produk')->where('id_penjualan', $id)->get();
@@ -178,5 +205,14 @@ class PenjualanController extends Controller
         $pdf = PDF::loadView('penjualan.nota_besar', compact('setting', 'penjualan', 'detail'));
         $pdf->setPaper(0,0,609,440, 'potrait');
         return $pdf->stream('Transaksi-'. date('Y-m-d-his') .'.pdf');
+    }
+
+    public function edit($id)
+    {
+         $penjualan = Penjualan::where('id_penjualan',$id)->first();
+         $data['id_penjualan'] = tambah_nol_didepan($id, 10);
+         $data['memberSelected'] = Member::where('id_member', $penjualan->id_member)->first();
+         $data['diskon'] = $penjualan->diskon;
+         return view('penjualan.edit',$data);
     }
 }
