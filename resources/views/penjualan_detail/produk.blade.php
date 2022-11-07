@@ -10,12 +10,10 @@ use App\Models\Kategori;
                 <h4 class="modal-title">Pilih Produk</h4>
             </div>
             <div class="modal-body">
-                <table class="table table-striped table-bordered table-produk">
+                <table class="table table-responsive table-striped   table-bordered table-produk">
                     <thead>
                         <th width="5%">No</th>
-                        <th>Kode</th>
                         <th>Nama</th>
-                        <th>Harga Beli</th>
                         <th>Kategori</th>
                         <th><i class="fa fa-cog"></i></th>
                     </thead>
@@ -26,9 +24,7 @@ use App\Models\Kategori;
                         ?>
                             <tr>
                                 <td width="5%">{{ $key+1 }}</td>
-                                <td><span class="label label-success">{{ $item->kode_produk }}</span></td>
                                 <td>{{ $item->nama_produk }}</td>
-                                <td>{{ $item->harga_beli }}</td>
                                   <td>{{ $kat['nama_kategori'] }}</td>
                                 <td>
                                     <a href="#" class="btn btn-primary btn-xs btn-flat"
